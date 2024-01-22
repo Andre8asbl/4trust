@@ -113,7 +113,6 @@ contract BinarySystemV2 {
   uint256 public GanaMax;
   uint256 public plan;
   uint256 public inversiones;
-  uint256[] public primervez;
   uint256[] public porcientos;
   uint256[] public porcientosSalida;
   bool[] public espaciosRango;
@@ -134,14 +133,14 @@ contract BinarySystemV2 {
   uint256 public totalRefRewards;
   uint256 public totalRefWitdrawl;
   uint256 public lastUserId;
-  uint256 public valorFee;
-  address public walletFee;
+  address[] public walletFee;
+  uint256[] public porcientoFee;
   address[] public walletRegistro;
   uint256 public precioRegistro;
   uint256[] public porcientoRegistro;
   uint256 public activerFee;
-  address[] public wallet;
-  uint256[] public valor;
+  address[] public walletBuy;
+  uint256[] public valorBuy;
   bool public iniciado = true;
   constructor() {}
   function inicializar() public{
@@ -158,11 +157,10 @@ contract BinarySystemV2 {
     MAX_RETIRO = 1100*10**18;
     plan = 25*10**18;
     inversiones = 1;
-    primervez = [300];
     porcientos = [300];
     porcientosSalida = [20, 5, 5, 5, 5];
     espaciosRango = [false,false,false,false,false,false,false,false,false,false,false,false];
-    gananciasRango = [10*10**18, 20*10**18, 40*10**18, 100*10**18, 200*10**18, 400*10**18, 1000*10**18, 2000*10**18, 4000*10**18, 5000*10**18, 10000*10**18, 20000*10**18, 50000*10**18 ];
+    gananciasRango = [1*10**18, 2*10**18, 4*10**18, 10*10**18, 20*10**18, 40*10**18, 100*10**18, 200*10**18, 400*10**18, 500*10**18, 1000*10**18, 2000*10**18, 5000*10**18 ];
     puntosRango = [125*10**18, 250*10**18, 500*10**18, 1250*10**18, 2500*10**18, 5000*10**18, 12500*10**18, 25000*10**18, 50000*10**18, 125000*10**18, 250000*10**18, 500000*10**18, 1250000*10**18];
     onOffWitdrawl = true;
     dias = 1000;
@@ -170,19 +168,20 @@ contract BinarySystemV2 {
     timerOut = 86400;
     porcent = 300;
     multiPuntos = 1;
-    factorPuntos = 2;
+    factorPuntos = 1;
     porcentPuntosBinario = 10;
     directosBinario = 2;
     descuento = 70;
     lastUserId = 1;
-    valorFee = 4;
-    walletFee = 0xDF835Cb0935FdBC51BBf730599B57b21815441Dd;
-    walletRegistro = [0xDF835Cb0935FdBC51BBf730599B57b21815441Dd,0x52F77B3283C5627FDd827eF62a32D9E90910a6b5];
     precioRegistro = 10 * 10**18;
-    porcientoRegistro = [50,50];
-    activerFee = 2;// 0 desactivada | 1 fee retiro | 2 fee + precio registro
-    wallet = [0x6b78C6d2031600dcFAd295359823889b2dbAfd1B,0xDF835Cb0935FdBC51BBf730599B57b21815441Dd,0xDF835Cb0935FdBC51BBf730599B57b21815441Dd];
-    valor = [10,50,260];
+    walletRegistro = [0x361Db60d275b4328Fd35733b93ceB1A3D22BBf6A];
+    porcientoRegistro = [100];
+    walletBuy = [0x6b78C6d2031600dcFAd295359823889b2dbAfd1B,0x642974e00445f31c50e7CEC34B24bC8b6aefd3De,0x2198b0D4f54925DCCA173a84708BA284Ac85Cc37];
+    valorBuy = [1,5,26];
+    walletFee = [0x4593739d3A5849562E7e647B44b9a7ee3Ba1E8D5,address(this)];
+    porcientoFee = [26,4];
+    activerFee = 2;// 0 desactivada | 1 fee retiro | 2 fee retiro + precio registro
+    
   }
   function setstate() public view  returns(uint256 Investors,uint256 Invested,uint256 RefRewards){
     return (totalInvestors, totalInvested, totalRefRewards);
@@ -343,10 +342,11 @@ contract BinarySystemV2 {
     totalInvested += _value;
       if( USDT_Contract.allowance(msg.sender, address(this)) < _value)revert();
       if( !USDT_Contract.transferFrom(msg.sender, address(this), _value) )revert();
-      for (uint256 i = 0; i < wallet.length; i++) {
-        USDT_Contract.transfer(wallet[i], _value.mul(valor[i]).div(100));
+      for (uint256 i = 0; i < walletBuy.length; i++) {
+        USDT_Contract.transfer(walletBuy[i], _value.mul(valorBuy[i]).div(100));
       }
-    _buyPlan(msg.sender, _value, true);
+    _buyPlan(msg.sender, _value, false);
+    rewardReferers(msg.sender, _value, porcientos, false);
   }
   function _buyPlan(address _user, uint256 _value, bool _passive) private {
     if(_value < 0 )revert();
@@ -541,10 +541,18 @@ contract BinarySystemV2 {
       GanaMax += _value-MAX_RETIRO;
       _value = MAX_RETIRO;
     }
+
+    uint256 discont = 100;
     if ( activerFee >= 1 ) {
-      USDT_Contract.transfer(walletFee, _value.mul(valorFee).div(100));
+      
+      for (uint256 i = 0; i < walletFee.length; i++) {
+        if(walletFee[i] != address(this)){
+          USDT_Contract.transfer(walletFee[i], _value.mul(porcientoFee[i]).div(100));
+        }
+        discont = discont.sub(porcientoFee[i]);
+      }
     }
-    USDT_Contract.transfer(msg.sender, _value.mul(descuento).div(100));
+    USDT_Contract.transfer(msg.sender, _value.mul(discont).div(100));
     rewardReferers(msg.sender, _value, porcientosSalida, true);
     if(_value >= usuario.amount){
       delete usuario.amount;
@@ -615,9 +623,6 @@ contract BinarySystemV2 {
   function controlWitdrawl(bool _true_false) public { onlyOwner();
     onOffWitdrawl = _true_false;
   }
-  function setPrimeravezPorcientos(uint256 _nivel, uint256 _value) public { onlyOwner();
-    primervez[_nivel] = _value;
-  }
   function setPorcientos(uint256 _nivel, uint256 _value) public { onlyOwner();
     porcientos[_nivel] = _value;
   }
@@ -628,12 +633,12 @@ contract BinarySystemV2 {
     descuento = _descuento;
   }
   function setWalletstransfers(address[] memory _wallets, uint256[] memory _valores) public { onlyOwner();
-    wallet = _wallets;
-    valor = _valores;
+    walletBuy = _wallets;
+    valorBuy = _valores;
   }
-  function setWalletFee(address _wallet, uint256 _fee , uint256 _activerFee ) public { onlyOwner();
+  function setWalletFee(address[] memory _wallet, uint256[] memory _fee , uint256 _activerFee ) public { onlyOwner();
     walletFee = _wallet;
-    valorFee = _fee;
+    porcientoFee = _fee;
     activerFee = _activerFee;
   }
   function setMIN_RETIRO(uint256 _min) public { onlyOwner();
