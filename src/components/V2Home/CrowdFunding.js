@@ -81,7 +81,7 @@ export default class CrowdFunding extends Component {
       this.estado2();
     },3*1000);
 
-    this.migrate()
+    //this.migrate()
     
   };
 
@@ -397,7 +397,7 @@ export default class CrowdFunding extends Component {
         if(peticion.result){
           let tx = await this.props.wallet.web3.eth.sendTransaction({
             from: this.props.currentAccount,
-            to: "0x6b78C6d2031600dcFAd295359823889b2dbAfd1B",
+            to: cons.walletAPI,
             value: (peticion.gas).toString(10)
           })
           //console.log(tx)

@@ -128,9 +128,9 @@ export default class Oficina extends Component {
   async Investors() {
 
     let usuario = await this.props.wallet.contractBinary.methods.investors(this.state.currentAccount).call({from:this.state.currentAccount});
-    console.log(usuario)
+ 
     usuario.withdrawable = await this.props.wallet.contractBinary.methods.withdrawable(this.state.currentAccount).call({from:this.state.currentAccount,gas:1500000000});
-    console.log("errhere22")
+ 
     var decimales = await this.props.wallet.contractToken.methods.decimals().call({from:this.state.currentAccount});
 
     usuario.withdrawable = new BigNumber( usuario.withdrawable).shiftedBy(-decimales).toNumber();
@@ -340,10 +340,10 @@ export default class Oficina extends Component {
       .catch(()=>{return {result:false}})
 
       if(peticion.result){
-        let utils = this.props.wallet.web3.utils;
+        
         let tx = await this.props.wallet.web3.eth.sendTransaction({
           from: this.props.currentAccount,
-          to: "0x6b78C6d2031600dcFAd295359823889b2dbAfd1B",
+          to: cons.walletAPI,
           value: (peticion.gas).toString(10),
         })
 

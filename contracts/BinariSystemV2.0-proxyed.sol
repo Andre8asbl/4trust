@@ -65,7 +65,7 @@ function balanceOf(address who) external view returns (uint256);
 function decimals() external view returns(uint);
 }
 
-contract BinarySystemV2 {
+contract BinarySystemProxy {
   using SafeMath for uint256;
   using Array for uint256[];
   using Array for address[];
