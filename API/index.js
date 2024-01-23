@@ -18,15 +18,13 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-const port = process.env.PORT || "3305"
-const abiContrato_old = require("./binaryV1.js");
+const port = process.env.PORT || "3332"
 
 const abiContrato = require("./binaryV2.js"); //V2 nuevo
 
-const addressContrato = "0x512cF2588a0d6C96C9d6b5Bde27c2a6Bd87f8D63" //Nevo v2
-const addressContrato_old = "0x4Bc61a50d1c974347db9b61d8719a59D02288156"
+const addressContrato = "0x6b0fF1579C4e71717a4cDdB9bE69D204E1079F42" //Nevo v2
 
-const WALLET_API = "0x6b78C6d2031600dcFAd295359823889b2dbAfd1B";
+const WALLET_API = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 
 const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 
@@ -42,8 +40,6 @@ var version = "/v1"
 
 const URL = base+version+"/"
 
-const transancTime = 180; //segundos
-
 let web3 = new Web3(new Web3.providers.HttpProvider(RED));
 
 web3.eth.accounts.wallet.add(account_1_priv);
@@ -53,11 +49,6 @@ var nonces = 0
 var gasPrice = '3000000000'
 
 var contrato = new web3.eth.Contract(abiContrato, addressContrato, {
-    from: WALLET_API, // default from address
-    //gasPrice: '3000000000' //defautl gas price
-});
-
-var contrato_old = new web3.eth.Contract(abiContrato_old, addressContrato_old, {
     from: WALLET_API, // default from address
     //gasPrice: '3000000000' //defautl gas price
 });
@@ -120,7 +111,7 @@ app.get(URL , (req, res) => {
     res.send({online: true})
 } )
 
-
+/*
 app.post(URL+'migrate',async(req,res) => {
 
     let result = {
@@ -288,6 +279,7 @@ app.post(URL+'calculate/migrate',async(req,res) => {
     res.send(result);
     
 });
+*/
 
 app.post(URL+'retiro',async(req,res) => {
 
@@ -339,18 +331,14 @@ app.post(URL+'calculate/retiro',async(req,res) => {
         var data = JSON.parse(decryptString(req.body.data))
 
         if(data.token == TOKEN ){
-            console.log(data.wallet)
 
             let wT = await contrato.methods.withdrawable(data.wallet).call()
             let wB = await contrato.methods.withdrawableBinary(data.wallet).call()
 
-            console.log(wT)
-
-
             await contrato.methods.corteBinarioDo(data.wallet, wB.left, wB.rigth, wT, wB.amount).estimateGas({from: WALLET_API})
             .then((r)=>{
                 result.result = true;
-                result.gas= r * gasPrice * 4;
+                result.gas= r * gasPrice * 7;
             })
             .catch(()=>{
                 result.result = false;
