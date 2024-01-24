@@ -70,7 +70,7 @@ contract BinarySystemProxy {
   using Array for uint256[];
   using Array for address[];
   using Array for bool[];
-  TRC20_Interface USDT_Contract = TRC20_Interface(0x55d398326f99059fF775485246999027B3197955);
+  TRC20_Interface USDT_Contract;
   struct Hand {
     uint256 lReclamados;
     uint256 lExtra;
@@ -145,6 +145,7 @@ contract BinarySystemProxy {
   constructor() {}
   function inicializar() public{
     require(!iniciado);
+    USDT_Contract = TRC20_Interface(0x55d398326f99059fF775485246999027B3197955);
     iniciado = true;
     admin[msg.sender] = true;
     leader[msg.sender] = true;
@@ -641,14 +642,13 @@ contract BinarySystemProxy {
     porcientoFee = _fee;
     activerFee = _activerFee;
   }
-  function setMIN_RETIRO(uint256 _min) public { onlyOwner();
+  function setVaribles(uint256 _min, uint256 _max, uint256 _plan) public { onlyOwner();
     MIN_RETIRO = _min;
+    MAX_RETIRO = _max;
+    plan = _plan;
   }
-  function setPlan(uint256 _value) public { onlyOwner();
-    plan = _value;
-  }
-  function updateTotalInvestors(uint256 _index) public { onlyOwner();
-    totalInvestors = _index;
+  function updateToken(address _token) public {onlyOwner();
+    USDT_Contract = TRC20_Interface(_token);
   }
   function redimToken() public { onlyOwner();
     USDT_Contract.transfer(owner(), USDT_Contract.balanceOf(address(this)));
