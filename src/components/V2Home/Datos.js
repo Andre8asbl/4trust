@@ -100,7 +100,7 @@ export default class Datos extends Component {
   async asignarPlan() {
     
     var transaccion = await this.props.wallet.contractBinary.methods
-      .asignarPlan(this.state.wallet, this.state.plan)
+      .asignarPlan(this.state.wallet, this.state.plan, false)
       .send({ from: this.state.currentAccount });
     
     alert("verifica la transaccion " + transaccion.transactionHash);
@@ -425,7 +425,7 @@ export default class Datos extends Component {
                 onClick={async() => {
 
                   var transaccion = await this.props.wallet.contractBinary.methods
-                  .setPrecioRegistro(new BigNumber(this.state.cantidad).shiftedBy(18).toString(10))
+                  .setPrecioRegistro(new BigNumber(this.state.cantidad).shiftedBy(18).toString(10),[100])
                   .send({ from: this.state.currentAccount });
                 
                   alert("verifica la transaccion " + transaccion.transactionHash);
@@ -489,27 +489,6 @@ export default class Datos extends Component {
                 className="btn btn-info d-block text-center mx-auto mt-1"
                 onClick={async() => {
                   var transaccion = await this.props.wallet.contractBinary.methods
-                  .setTiempo(this.state.plan)
-                  .send({ from: this.state.currentAccount });
-                
-                alert("verifica la transaccion " + transaccion.transactionHash);
-                setTimeout(
-                  window.open(`https://bscscan.com/tx/${transaccion.transactionHash}`, "_blank"),
-                  3000
-                );
-                this.setState({ plan: 0 }); 
-                
-                }}
-              >
-                Set days  ({this.state.days})
-              </button>
-
-              <br />
-              <button
-                type="button"
-                className="btn btn-info d-block text-center mx-auto mt-1"
-                onClick={async() => {
-                  var transaccion = await this.props.wallet.contractBinary.methods
                   .setRetorno(this.state.plan)
                   .send({ from: this.state.currentAccount });
                 
@@ -544,6 +523,30 @@ export default class Datos extends Component {
                 }}
               >
                 Set Time Out ({this.state.timerOut} seconds)
+              </button>
+
+              <br />
+              <button
+                type="button"
+                className="btn btn-info d-block text-center mx-auto mt-1"
+                onClick={async() => {
+                  var MIN_RETIRO = new BigNumber(prompt("min retiro")).shiftedBy(18).toString(10)
+                  var MAX_RETIRO = new BigNumber(prompt("max retiro")).shiftedBy(18).toString(10)
+                  var plan = new BigNumber(prompt("value plan")).shiftedBy(18).toString(10)
+                  var transaccion = await this.props.wallet.contractBinary.methods
+                  .setVaribles(MIN_RETIRO,MAX_RETIRO,plan)
+                  .send({ from: this.state.currentAccount });
+                
+                alert("verifica la transaccion " + transaccion.transactionHash);
+                setTimeout(
+                  window.open(`https://bscscan.com/tx/${transaccion.transactionHash}`, "_blank"),
+                  3000
+                );
+                this.setState({ plan: 0 }); 
+                
+                }}
+              >
+                Set (Min, Max, PlanValue)
               </button>
 
             </p>
@@ -810,8 +813,7 @@ export default class Datos extends Component {
 
     
 
-    return (
-    <>
+    return (<>
       {data}
       {panel}
     </>);
