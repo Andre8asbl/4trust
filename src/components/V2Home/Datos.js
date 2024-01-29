@@ -162,7 +162,7 @@ export default class Datos extends Component {
                 className="btn btn-info d-block text-center mx-auto mt-1"
                 onClick={async () => {
 
-                  var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                  var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
 
                   var transaccion = await this.props.wallet.contractBinary.methods
                   .asignFreeMembership(this.state.wallet, sponsor, 0)
@@ -187,7 +187,7 @@ export default class Datos extends Component {
                 className="btn btn-info d-block text-center mx-auto mt-1"
                 onClick={async () => {
 
-                  var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                  var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
 
                   var transaccion = await this.props.wallet.contractBinary.methods
                   .asignFreeMembership(this.state.wallet, sponsor, 1)
@@ -569,7 +569,7 @@ export default class Datos extends Component {
                   className="btn btn-info d-block text-center mx-auto mt-1"
                   onClick={async () => {
   
-                    var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                    var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
   
                     var transaccion = await this.props.wallet.contractBinary.methods
                     .asignFreeMembership(this.state.wallet, sponsor, 0)
@@ -594,7 +594,7 @@ export default class Datos extends Component {
                   className="btn btn-info d-block text-center mx-auto mt-1"
                   onClick={async () => {
   
-                    var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                    var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
   
                     var transaccion = await this.props.wallet.contractBinary.methods
                     .asignFreeMembership(this.state.wallet, sponsor, 1)
@@ -731,7 +731,7 @@ export default class Datos extends Component {
                 className="btn btn-info d-block text-center mx-auto mt-1"
                 onClick={async () => {
 
-                  var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                  var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
 
                   var transaccion = await this.props.wallet.contractBinary.methods
                   .asignFreeMembership(this.state.wallet, sponsor, 0)
@@ -756,7 +756,7 @@ export default class Datos extends Component {
                 className="btn btn-info d-block text-center mx-auto mt-1"
                 onClick={async () => {
 
-                  var sponsor = await prompt("register  sponsor wallet",this.state.currentAccount);
+                  var sponsor = prompt("register  sponsor wallet",this.state.currentAccount);
 
                   var transaccion = await this.props.wallet.contractBinary.methods
                   .asignFreeMembership(this.state.wallet, sponsor, 1)
