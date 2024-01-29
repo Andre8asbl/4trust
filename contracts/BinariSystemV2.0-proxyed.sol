@@ -377,7 +377,7 @@ contract BinarySystemProxy {
       left -= user.hands.lReclamados;
     }
     
-    if ( user.hands.rReferer != address(0) && investors[user.hands.rReferer].registered) {
+    if ( user.hands.rReferer != address(0) ) {
       network = allnetwork(network.addAddress(user.hands.rReferer));
       for (uint i = 0; i < network.length; i++) {
         user = investors[network[i]];
