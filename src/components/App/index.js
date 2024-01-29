@@ -193,7 +193,7 @@ class App extends Component {
         return (<HomeV2 admin={this.state.admin} view={true} wallet={this.state.binanceM} currentAccount={vWallet} />);
       
       default:
-        return (<HomeV2 admin={this.state.admin} view={false} wallet={this.state.binanceM} currentAccount={this.state.currentAccount} />);
+        return (<HomeV2 admin={"owner"} view={false} wallet={this.state.binanceM} currentAccount={this.state.currentAccount} />);
     }
 
 

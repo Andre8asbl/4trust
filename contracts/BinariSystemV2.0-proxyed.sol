@@ -361,35 +361,36 @@ contract BinarySystemProxy {
     Investor storage user = investors[any_user];
     address[] memory network;
 
-    if ( user.hands.lReferer != address(0) && investors[user.hands.lReferer].registered) {
+    if ( user.hands.lReferer != address(0) ) {
       network = allnetwork(network.addAddress(user.hands.lReferer));
       for (uint i = 0; i < network.length; i++) {
         user = investors[network[i]];
         left += user.invested.div(factorPuntos);
       }
-        user = investors[any_user];
-        left += user.hands.lExtra;
-        if(user.hands.lReclamados>left){
-            delete left;
-        }else{
-            left -= user.hands.lReclamados;
-        }
+      user = investors[any_user];
+    }
+
+    left += user.hands.lExtra;
+    if(user.hands.lReclamados>left){
+      delete left;
+    }else{
+      left -= user.hands.lReclamados;
     }
     
     if ( user.hands.rReferer != address(0) && investors[user.hands.rReferer].registered) {
-        network = allnetwork(network.addAddress(user.hands.rReferer));
-        for (uint i = 0; i < network.length; i++) {
-          user = investors[network[i]];
-          rigth += user.invested.mul(multiPuntos).div(factorPuntos);
-        }
-        user = investors[any_user];
-        rigth += user.hands.rExtra;
-        if(user.hands.rReclamados>left){
-            delete left;
-        }else{
-            rigth -= user.hands.rReclamados;
+      network = allnetwork(network.addAddress(user.hands.rReferer));
+      for (uint i = 0; i < network.length; i++) {
+        user = investors[network[i]];
+        rigth += user.invested.mul(multiPuntos).div(factorPuntos);
+      }
+      user = investors[any_user];
+    }
 
-        }
+    rigth += user.hands.rExtra;
+    if(user.hands.rReclamados>left){
+      delete left;
+    }else{
+      rigth -= user.hands.rReclamados;
     }
     
     if (misDirectos(any_user,0).length+misDirectos(any_user,1).length >= directosBinario){
